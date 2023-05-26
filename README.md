@@ -53,7 +53,7 @@ chaincode into this folder will make it accessible inside the Fabric CLI contain
 ```
 cd ~
 mkdir -p ./fabric-samples/chaincode/ngo
-cp ./non-profit-blockchain/ngo-chaincode1/src/* ./fabric-samples/chaincode/ngo
+cp ./non-profit-blockchain/ngo-chaincode1/chaincode/src/* ./fabric-samples/chaincode/ngo3
 ```
 
 ## Step 2 - Install the chaincode on your peer
@@ -67,7 +67,7 @@ Notice we are using the `-l node` flag, as our chaincode is written in Node.js.
 ```
 docker exec -e "CORE_PEER_TLS_ENABLED=true" -e "CORE_PEER_TLS_ROOTCERT_FILE=/opt/home/managedblockchain-tls-chain.pem" \
     -e "CORE_PEER_LOCALMSPID=$MSP" -e "CORE_PEER_MSPCONFIGPATH=$MSP_PATH" -e "CORE_PEER_ADDRESS=$PEER"  \
-    cli peer chaincode install -n ngo -l node -v v0 -p /opt/gopath/src/github.com/ngo
+    cli peer chaincode install -n ngo5 -l node -v v0 -p /opt/gopath/src/github.com/ngo3
 ```
 
 Expected response:
@@ -92,7 +92,7 @@ It can take up to 30 seconds to instantiate chaincode on the channel.
 ```
 docker exec -e "CORE_PEER_TLS_ENABLED=true" -e "CORE_PEER_TLS_ROOTCERT_FILE=/opt/home/managedblockchain-tls-chain.pem" \
     -e "CORE_PEER_LOCALMSPID=$MSP" -e "CORE_PEER_MSPCONFIGPATH=$MSP_PATH" -e "CORE_PEER_ADDRESS=$PEER"  \
-    cli peer chaincode instantiate -o $ORDERER -C mychannel -n ngo -v v0 -c '{"Args":["init"]}' --cafile /opt/home/managedblockchain-tls-chain.pem --tls
+    cli peer chaincode instantiate -o $ORDERER -C $CHANNEL -n ngo5 -v v0 -c '{"Args":["init"]}' --cafile /opt/home/managedblockchain-tls-chain.pem --tls
 ```
 
 Expected response:
@@ -110,7 +110,7 @@ Query all donors
 ```
 docker exec -e "CORE_PEER_TLS_ENABLED=true" -e "CORE_PEER_TLS_ROOTCERT_FILE=/opt/home/managedblockchain-tls-chain.pem" \
     -e "CORE_PEER_ADDRESS=$PEER" -e "CORE_PEER_LOCALMSPID=$MSP" -e "CORE_PEER_MSPCONFIGPATH=$MSP_PATH" \
-    cli peer chaincode query -C mychannel -n ngo -c '{"Args":["queryAllDonors"]}'
+    cli peer chaincode query -C test2 -n ngo4 -c '{"Args":["queryAllDonors"]}'
 ```
 
 Expected response:
@@ -127,8 +127,8 @@ Let's add a couple of donors to Fabric. Execute both of these transactions below
 ```
 docker exec -e "CORE_PEER_TLS_ENABLED=true" -e "CORE_PEER_TLS_ROOTCERT_FILE=/opt/home/managedblockchain-tls-chain.pem" \
     -e "CORE_PEER_ADDRESS=$PEER" -e "CORE_PEER_LOCALMSPID=$MSP" -e "CORE_PEER_MSPCONFIGPATH=$MSP_PATH" \
-    cli peer chaincode invoke -C mychannel -n ngo \
-    -c  '{"Args":["createDonor","{\"donorUserName\": \"edge\", \"email\": \"edge@def.com\", \"registeredDate\": \"2018-10-22T11:52:20.182Z\"}"]}' -o $ORDERER --cafile /opt/home/managedblockchain-tls-chain.pem --tls
+    cli peer chaincode invoke -C test2 -n ngo4 \
+    -c  '{"Args":["createDonor","{\"odenId\": \"raghs\", \"email\": \"ragh@gmail.com\", \"Dob\": \"2018-10-22T11:52:20.182Z\"}"]}' -o $ORDERER --cafile /opt/home/managedblockchain-tls-chain.pem --tls
 
 docker exec -e "CORE_PEER_TLS_ENABLED=true" -e "CORE_PEER_TLS_ROOTCERT_FILE=/opt/home/managedblockchain-tls-chain.pem" \
     -e "CORE_PEER_ADDRESS=$PEER" -e "CORE_PEER_LOCALMSPID=$MSP" -e "CORE_PEER_MSPCONFIGPATH=$MSP_PATH" \
@@ -142,14 +142,14 @@ Query all donors
 ```
 docker exec -e "CORE_PEER_TLS_ENABLED=true" -e "CORE_PEER_TLS_ROOTCERT_FILE=/opt/home/managedblockchain-tls-chain.pem" \
     -e "CORE_PEER_ADDRESS=$PEER" -e "CORE_PEER_LOCALMSPID=$MSP" -e "CORE_PEER_MSPCONFIGPATH=$MSP_PATH" \
-    cli peer chaincode query -C mychannel -n ngo -c '{"Args":["queryAllDonors"]}'
+    cli peer chaincode query -C test2 -n ngo4 -c '{"Args":["queryAllDonors"]}'
 ```
 
 Query a specific donor
 ```
 docker exec -e "CORE_PEER_TLS_ENABLED=true" -e "CORE_PEER_TLS_ROOTCERT_FILE=/opt/home/managedblockchain-tls-chain.pem" \
     -e "CORE_PEER_ADDRESS=$PEER" -e "CORE_PEER_LOCALMSPID=$MSP" -e "CORE_PEER_MSPCONFIGPATH=$MSP_PATH" \
-    cli peer chaincode query -C mychannel -n ngo -c '{"Args":["queryDonor","{\"donorUserName\": \"edge\"}"]}'
+    cli peer chaincode query -C test2 -n ngo4 -c '{"Args":["queryDonor","{\"odenId\": \"raghs\"}"]}'
 ```
 
 ## Move on to Part 3
@@ -164,3 +164,43 @@ The workshop instructions can be found in the README files in parts 1-4:
 * [Part 7:](../ngo-events/README.md) Use blockchain events to notify users of NGO donations.
 * [Part 8:](../blockchain-explorer/README.md) Deploy Hyperledger Explorer. 
 * [Part 9:](../ngo-identity/README.md) Integrating blockchain users with Amazon Cognito.
+
+
+docker exec -e "CORE_PEER_TLS_ENABLED=true" -e "CORE_PEER_TLS_ROOTCERT_FILE=/opt/home/managedblockchain-tls-chain.pem" \
+    -e "CORE_PEER_ADDRESS=$PEER" -e "CORE_PEER_LOCALMSPID=$MSP" -e "CORE_PEER_MSPCONFIGPATH=$MSP_PATH" \
+    cli peer chaincode instantiate -o $ORDERER -C $CHANNEL -n ngo1 -v $CHAINCODEVERSION \
+    -c '{"Args":["init"]}' --cafile $CAFILE --tls
+
+
+docker exec -e "CORE_PEER_TLS_ENABLED=true" -e "CORE_PEER_TLS_ROOTCERT_FILE=/opt/home/managedblockchain-tls-chain.pem" \
+    -e "CORE_PEER_ADDRESS=$PEER" -e "CORE_PEER_LOCALMSPID=$MSP" -e "CORE_PEER_MSPCONFIGPATH=$MSP_PATH" \
+    cli peer chaincode instantiate -o $ORDERER -C $CHANNEL -n ngo1 -v $CHAINCODEVERSION \
+    -c '{"Args":["init","a","100","b","200"]}' --cafile $CAFILE --tls
+
+
+
+docker exec -e "CORE_PEER_TLS_ENABLED=true" -e "CORE_PEER_TLS_ROOTCERT_FILE=/opt/home/managedblockchain-tls-chain.pem" \
+    -e "CORE_PEER_ADDRESS=$PEER" -e "CORE_PEER_LOCALMSPID=$MSP" -e "CORE_PEER_MSPCONFIGPATH=$MSP_PATH" \
+    cli peer channel create -c test -f /opt/home/$CHANNEL.pb -o $ORDERER --cafile $CAFILE --tls --timeout 900s
+
+
+
+docker exec cli configtxgen -outputCreateChannelTx /opt/home/test1.pb -profile OneOrgChannel -channelID test2 --configPath /opt/home/
+
+docker exec -e "CORE_PEER_TLS_ENABLED=true" -e "CORE_PEER_TLS_ROOTCERT_FILE=/opt/home/managedblockchain-tls-chain.pem" \
+    -e "CORE_PEER_ADDRESS=$PEER" -e "CORE_PEER_LOCALMSPID=$MSP" -e "CORE_PEER_MSPCONFIGPATH=$MSP_PATH" \
+    cli peer channel create -c test2 -f /opt/home/test2.pb -o $ORDERER --cafile $CAFILE --tls --timeout 900s
+
+docker exec -e "CORE_PEER_TLS_ENABLED=true" -e "CORE_PEER_TLS_ROOTCERT_FILE=/opt/home/managedblockchain-tls-chain.pem" \
+    -e "CORE_PEER_ADDRESS=$PEER" -e "CORE_PEER_LOCALMSPID=$MSP" -e "CORE_PEER_MSPCONFIGPATH=$MSP_PATH" \
+    cli peer channel join -b test2.block  -o $ORDERER --cafile $CAFILE --tls
+
+
+
+curl -s -X POST "http://localhost:3000/createBlock" -H "content-type: application/json" -d '{ 
+   "odenId": "Ragha", 
+   "email": "ragh@gmail.com", 
+   "registeredDate": "2018-03-22",
+   "loc":"s3 resource",
+    "key":""
+}'
